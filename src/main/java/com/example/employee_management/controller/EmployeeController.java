@@ -5,6 +5,7 @@ import com.example.employee_management.dto.EmployeeRequestDto;
 import com.example.employee_management.dto.EmployeeResponseDto;
 import com.example.employee_management.service.EmployeeService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,13 @@ public class EmployeeController {
     public ResponseEntity<EmployeeResponseDto> updateEmployeeById(@PathVariable Long id,@Valid @RequestBody EmployeeRequestDto employeeRequestDto){
 
        return ResponseEntity.ok(employeeService.updateEmployee(id,employeeRequestDto));
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<EmployeeResponseDto>> getEmployeesWithPagination(@RequestParam(defaultValue = "0") int page
+            , @RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "id") String sortBy){
+        return ResponseEntity.ok(employeeService.getEmployees(page,size,sortBy));
+
     }
 }
 

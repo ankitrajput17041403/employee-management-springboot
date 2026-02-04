@@ -6,6 +6,10 @@ import com.example.employee_management.entity.Employee;
 import com.example.employee_management.exception.EmployeeNotFoundException;
 import com.example.employee_management.mapper.EmployeeMapper;
 import com.example.employee_management.repository.EmployeeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -107,6 +111,17 @@ public class EmployeeServiceImpl implements EmployeeService{
       Employee saveEmployeeOrUpdate = employeeRepository.save(availablEmployee);
       return EmployeeMapper.toDto(saveEmployeeOrUpdate);
     }
+
+    @Override
+    public Page<EmployeeResponseDto> getEmployees(int page, int size, String sortBy) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+
+        Page<Employee> employeePage = employeeRepository.findAll(pageable);
+
+        return employeePage.map(EmployeeMapper::toDto);
+    }
+
 
 
 }
