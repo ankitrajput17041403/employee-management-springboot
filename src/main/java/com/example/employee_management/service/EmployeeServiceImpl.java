@@ -123,5 +123,82 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
 
+    @Override
+    public List<EmployeeResponseDto> searchByName(String name) {
+
+        List<Employee> employees =
+                employeeRepository.findByNameContainingIgnoreCase(name);
+
+        return employees.stream()
+                .map(EmployeeMapper::toDto)
+                .toList();
+    }
+
+
+    @Override
+    public List<EmployeeResponseDto> searchByDepartment(String department) {
+
+        List<Employee> employees =
+                employeeRepository.findByDepartmentContainingIgnoreCase(department);
+
+        return employees.stream()
+                .map(EmployeeMapper::toDto)
+                .toList();
+    }
+
+
+    @Override
+    public List<EmployeeResponseDto> searchEmployees(String name, String department) {
+
+        List<Employee> employees;
+
+        if (name != null && department != null) {
+
+            employees = employeeRepository
+                    .findByNameContainingIgnoreCaseAndDepartmentContainingIgnoreCase(name, department);
+
+        } else if (name != null) {
+
+            employees = employeeRepository
+                    .findByNameContainingIgnoreCase(name);
+
+        } else if (department != null) {
+
+            employees = employeeRepository
+                    .findByDepartmentContainingIgnoreCase(department);
+
+        } else {
+
+            employees = employeeRepository.findAll();
+        }
+
+        return employees.stream()
+                .map(EmployeeMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public Page<EmployeeResponseDto> searchEmployees(String name, String department, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Employee> employe;
+
+        if(name!=null && department!=null){
+            employe=employeeRepository.findByNameContainingIgnoreCaseAndDepartmentContainingIgnoreCase(name,department,pageable);
+        } else if (name!=null) {
+            employe=employeeRepository.findByNameContainingIgnoreCase(name,pageable);
+
+        } else if (department!=null) {
+            employe=employeeRepository.findByDepartmentContainingIgnoreCase(department,pageable);
+
+        }
+        else {
+            employe=employeeRepository.findAll(pageable);
+        }
+
+
+        return employe.map(EmployeeMapper::toDto);
+    }
+
 
 }

@@ -14,4 +14,16 @@ public interface EmployeeService {
     EmployeeResponseDto updateEmployee(Long id,EmployeeRequestDto employeeRequestDto);
     public Page<EmployeeResponseDto> getEmployees(int page, int size, String sortBy);
 
-    }
+    // For List ---------------
+    List<EmployeeResponseDto> searchByName(String name);
+
+    List<EmployeeResponseDto> searchByDepartment(String department);
+
+    List<EmployeeResponseDto> searchEmployees(String name, String department);
+
+    //Search + pageignation
+
+    Page<EmployeeResponseDto> searchEmployees(String name, String department,int page,int size);
+
+
+}

@@ -62,5 +62,40 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getEmployees(page,size,sortBy));
 
     }
+//
+//    @GetMapping("/search/name")
+//    public ResponseEntity<List<EmployeeResponseDto>> searchByName(
+//            @RequestParam String name) {
+//        return ResponseEntity.ok(employeeService.searchByName(name));
+//    }
+//
+//    @GetMapping("/search/department")
+//    public ResponseEntity<List<EmployeeResponseDto>> searchByDepartment(
+//            @RequestParam  String department){
+//        return ResponseEntity.ok(employeeService.searchByDepartment(department));
+//
+//
+//    }
+//
+//    @GetMapping("/search")
+//    public ResponseEntity<List<EmployeeResponseDto>> searchByDepartment(
+//            @RequestParam(required = false)  String name, @RequestParam(required = false) String department){
+//        return ResponseEntity.ok(employeeService.searchEmployees(name,department));
+//
+//
+//    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<EmployeeResponseDto>> searchEmployees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String department,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        return ResponseEntity.ok(employeeService.searchEmployees(name, department, page, size));
+    }
+
+
+
 }
 
