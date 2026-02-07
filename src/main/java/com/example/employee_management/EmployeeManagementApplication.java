@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
-
 @SpringBootApplication(
 		//❌ “Do NOT apply default security rules”
 		//❌ “Do NOT protect my APIs”

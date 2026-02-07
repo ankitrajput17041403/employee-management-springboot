@@ -1,5 +1,6 @@
 package com.example.employee_management.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,5 +39,9 @@ public class GlobalExceptionHandler {
                         errors.put(error.getField(), error.getDefaultMessage()));
 
         return ResponseEntity.badRequest().body(errors);
+    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> handleValidation(ConstraintViolationException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }

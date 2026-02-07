@@ -21,7 +21,7 @@ public interface EmployeeService {
 
     List<EmployeeResponseDto> searchEmployees(String name, String department);
 
-    //Search + pageignation
+   //Search + pageignation
 
     Page<EmployeeResponseDto> searchEmployees(String name, String department,int page,int size);
 
