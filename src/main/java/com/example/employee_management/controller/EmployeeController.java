@@ -7,6 +7,7 @@ import com.example.employee_management.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -21,10 +22,10 @@ import java.util.List;
 
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
-
 @RestController
 @Validated
 @RequestMapping("/api/employees")
+@Tag(name = "Employee APIs", description = "Operations related to employee management")
 public class EmployeeController {
 
     private EmployeeService employeeService;
@@ -112,7 +113,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/page")
-    @Operation(summary = "Get employees with pagination")
+    @Operation(summary = "Get employees with pagination",
+            description = "Returns employees with page number, page size and sorting support"
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Employees fetched successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid pagination parameters"),
@@ -154,7 +157,8 @@ public class EmployeeController {
 //    }
 
     @GetMapping("/search")
-    @Operation(summary = "Search employees by name/department with pagination"
+    @Operation(summary = "Search employees",
+            description = "Search employees by name or department with pagination support"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Employees fetched successfully"),
