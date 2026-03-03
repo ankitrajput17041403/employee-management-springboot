@@ -2,7 +2,10 @@ package com.example.employee_management.service;
 
 
 
+import com.example.employee_management.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.employee_management.entity.Role;
@@ -20,6 +23,14 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+
+
     // 🔥 REGISTER
     public String register(RegisterRequest request) {
 
@@ -28,7 +39,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         // 🔥 SET DEFAULT ROLE
-        user.setRole(Role.ROLE_USER);
+       // user.setRole(Role.USER);
+        user.setRole(request.getRole()); // IMPORTANT
 
         userRepository.save(user);
 
@@ -45,6 +57,9 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        return "Login successful";
+        UserDetails userDetails = userDetailsService
+                .loadUserByUsername(request.getUsername());
+
+        return jwtService.generateToken(userDetails);
     }
 }
