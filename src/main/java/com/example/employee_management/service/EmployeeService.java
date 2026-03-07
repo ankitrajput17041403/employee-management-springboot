@@ -8,10 +8,15 @@ import java.util.List;
 
 public interface EmployeeService {
     EmployeeResponseDto createEmployee(EmployeeRequestDto requestDto);
+
     List<EmployeeResponseDto> getAllEmployees();
+
     EmployeeResponseDto getEmployeeById(Long id);
+
     EmployeeResponseDto deleteEmployeeById(Long id);
-    EmployeeResponseDto updateEmployee(Long id,EmployeeRequestDto employeeRequestDto);
+
+    EmployeeResponseDto updateEmployee(Long id, EmployeeRequestDto employeeRequestDto);
+
     public Page<EmployeeResponseDto> getEmployees(int page, int size, String sortBy);
 
     // For List ---------------
@@ -21,9 +26,9 @@ public interface EmployeeService {
 
     List<EmployeeResponseDto> searchEmployees(String name, String department);
 
-   //Search + pageignation
+    //Search + pageignation
 
-    Page<EmployeeResponseDto> searchEmployees(String name, String department,int page,int size);
+    Page<EmployeeResponseDto> searchEmployees(String name, String department, int page, int size);
 
 
 }

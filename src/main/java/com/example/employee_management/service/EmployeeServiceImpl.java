@@ -13,13 +13,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
 
-    private EmployeeRepository employeeRepository;
+    private static final Logger logger =
+            LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
+    private final EmployeeRepository employeeRepository;
     public EmployeeServiceImpl(EmployeeRepository employeeRepository){
         this.employeeRepository=employeeRepository;
     }
@@ -45,15 +48,19 @@ public class EmployeeServiceImpl implements EmployeeService{
 //        responseDto.setDepartment(savedEmployee.getDepartment());
 //        responseDto.setSalary(savedEmployee.getSalary());
 
-          Employee employee =  EmployeeMapper.toEntity(requestDto);
-          Employee saveEmployee = employeeRepository.save(employee);
+        logger.info("Creating employee with email {}", requestDto.getEmail());
+
+        Employee employee = EmployeeMapper.toEntity(requestDto);
+        Employee saveEmployee = employeeRepository.save(employee);
+
+        logger.info("Employee created successfully with id {}", saveEmployee.getId());
 
         return EmployeeMapper.toDto(saveEmployee);
     }
 
     @Override
     public List<EmployeeResponseDto> getAllEmployees() {
-       List<Employee> employees = employeeRepository.findAll();
+
 //        Old way-----------------
 //        return employees.stream()
 //                .map(employee -> {
@@ -65,12 +72,17 @@ public class EmployeeServiceImpl implements EmployeeService{
 //                    return dto;
 //                })
 //                .collect(Collectors.toList());
+        logger.info("Fetching all employees from database");
+
+        List<Employee> employees = employeeRepository.findAll();
+
+        logger.info("Total employees fetched {}", employees.size());
+
         return employees.stream().map(EmployeeMapper::toDto).toList();
     }
 
     @Override
     public EmployeeResponseDto getEmployeeById(Long id) {
-        Employee singleEmplData = employeeRepository.findById(id).orElseThrow(() -> new EmployeeNotFoundException("This Id Employee Is NOT! Avilable" + id));
 
 //        EmployeeResponseDto dto = new EmployeeResponseDto();
 //        dto.setName(singleEmplData.getName());
@@ -79,23 +91,33 @@ public class EmployeeServiceImpl implements EmployeeService{
 //        dto.setSalary(singleEmplData.getSalary());
 //        System.out.println("This Is The Name-----"+dto.getName());
 
+            logger.info("Fetching employee with id {}", id);
 
-        return EmployeeMapper.toDto(singleEmplData);
-    }
+            Employee singleEmplData = employeeRepository.findById(id)
+                    .orElseThrow(() -> new EmployeeNotFoundException("This Id Employee Is NOT! Available " + id));
+
+            return EmployeeMapper.toDto(singleEmplData);
+        }
 
     @Override
     public EmployeeResponseDto deleteEmployeeById(Long id) {
-        Employee availableEmp =  employeeRepository.findById(id).orElseThrow(()->new EmployeeNotFoundException("This Id Employee Not Available"+id));
+
+        logger.warn("Deleting employee with id {}", id);
+
+        Employee availableEmp = employeeRepository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException("This Id Employee Not Available " + id));
+
         EmployeeResponseDto employeeRequestDto = EmployeeMapper.toDto(availableEmp);
 
         employeeRepository.delete(availableEmp);
+
+        logger.warn("Employee deleted with id {}", id);
 
         return employeeRequestDto;
     }
 
     @Override
     public EmployeeResponseDto updateEmployee(Long id,EmployeeRequestDto employeeRequestDto) {
-      Employee availablEmployee =   employeeRepository.findById(id).orElseThrow(()->new EmployeeNotFoundException("Employee Not Available From This Id"+id));
 
 //
 //      Old Approach.............................................
@@ -104,16 +126,24 @@ public class EmployeeServiceImpl implements EmployeeService{
 //      availablEmployee.setDepartment(employeeRequestDto.getDepartment());
 //      availablEmployee.setSalary(employeeRequestDto.getSalary());
 
-      EmployeeMapper.updateEntity(availablEmployee,employeeRequestDto);
+        logger.info("Updating employee with id {}", id);
 
+        Employee availablEmployee = employeeRepository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee Not Available From This Id " + id));
 
-      //Employee e= EmployeeMapper.toEntity(employeeRequestDto);
-      Employee saveEmployeeOrUpdate = employeeRepository.save(availablEmployee);
-      return EmployeeMapper.toDto(saveEmployeeOrUpdate);
+        EmployeeMapper.updateEntity(availablEmployee, employeeRequestDto);
+
+        Employee saveEmployeeOrUpdate = employeeRepository.save(availablEmployee);
+
+        logger.info("Employee updated successfully with id {}", id);
+
+        return EmployeeMapper.toDto(saveEmployeeOrUpdate);
     }
 
     @Override
     public Page<EmployeeResponseDto> getEmployees(int page, int size, String sortBy) {
+
+        logger.info("Fetching employees with pagination page={}, size={}, sortBy={}", page, size, sortBy);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
 
@@ -128,7 +158,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
         List<Employee> employees =
                 employeeRepository.findByNameContainingIgnoreCase(name);
-
+        logger.info("Searching employees by name {}", name);
         return employees.stream()
                 .map(EmployeeMapper::toDto)
                 .toList();
@@ -140,6 +170,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
         List<Employee> employees =
                 employeeRepository.findByDepartmentContainingIgnoreCase(department);
+        logger.info("Searching employees by department {}", department);
 
         return employees.stream()
                 .map(EmployeeMapper::toDto)
@@ -156,18 +187,21 @@ public class EmployeeServiceImpl implements EmployeeService{
 
             employees = employeeRepository
                     .findByNameContainingIgnoreCaseAndDepartmentContainingIgnoreCase(name, department);
-
+            logger.info("Searching employees with name={} and department={}", name, department);
         } else if (name != null) {
 
             employees = employeeRepository
                     .findByNameContainingIgnoreCase(name);
+            logger.info("Searching employees with name={} ", name);
 
         } else if (department != null) {
 
             employees = employeeRepository
                     .findByDepartmentContainingIgnoreCase(department);
+            logger.info("Searching employees with  department={}",  department);
 
         } else {
+            logger.info("Searching employees without filters");
 
             employees = employeeRepository.findAll();
         }
@@ -179,6 +213,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public Page<EmployeeResponseDto> searchEmployees(String name, String department, int page, int size) {
+        logger.info("Searching employees with pagination name={}, department={}, page={}, size={}",
+                name, department, page, size);
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Employee> employe;
@@ -195,7 +231,6 @@ public class EmployeeServiceImpl implements EmployeeService{
         else {
             employe=employeeRepository.findAll(pageable);
         }
-
 
         return employe.map(EmployeeMapper::toDto);
     }

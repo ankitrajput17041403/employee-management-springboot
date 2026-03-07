@@ -10,9 +10,16 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String department;
+
+    @Column(nullable = false)
     private Double salary;
 
     public Long getId() {
@@ -54,8 +61,4 @@ public class Employee {
     public void setSalary(Double salary) {
         this.salary = salary;
     }
-
-
-
-
 }

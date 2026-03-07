@@ -20,15 +20,13 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestBody LoginRequestDto request) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        //in this line spring will check authenticat the user which are trying to login..
+        //Internally AuthenticatinMnagaer ->Userdetailservice->check password and send to the AuthenticationManager
+        //Object will have usernformation kind user name,role, and user Authenticated kind.....
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        UserDetails userDetails =
-                (UserDetails) authentication.getPrincipal();
+        //Inside current logied in user details...
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         return jwtService.generateToken(userDetails);
     }
