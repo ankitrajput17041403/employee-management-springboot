@@ -6,6 +6,7 @@ import com.example.employee_management.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -20,11 +21,11 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 @RestController
 @Validated
 @RequestMapping("/api/employees")
 @Tag(name = "Employee APIs", description = "Operations related to employee management")
+@SecurityRequirement(name = "bearerAuth")
 public class EmployeeController {
 
     private static final Logger logger =
